@@ -36,6 +36,11 @@
   color: #fff;
 }
 
+.wz-ui-header .tab.hasChanged{
+  box-shadow: 0 4px #fd971f;
+  color: #fff;
+}
+
 aside{
   width: 180px;
   height: ~"calc(100% - 44px)";
@@ -103,4 +108,12 @@ aside{
   background-color: #3D3E3E !important;
   border-color: #3D3E3E !important;
   border-radius: 10px !important;
+}
+
+.file-name {
+  border: 1px solid black;
+}
+
+.change-name-pabel {
+  padding: 1em;
 }

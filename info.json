@@ -95,7 +95,38 @@
                     "css"    : [],
                     "script" : [],
                     "start"  : []
-                  }
+                  },
+
+                "writeName" : {
+
+                      "description" : "",
+
+                      "template" : "view/writeName.html",
+
+                      "createAnimation" : false,
+                      "maxizable" : false,
+                      "resizable" : false,
+
+                      "width"  : {
+
+                          "default" : 500,
+                          "min"     : 500,
+                          "max"     : 0
+
+                      },
+
+                      "height" : {
+
+                          "default" : 380,
+                          "min"     : 380,
+                          "max"     : 0
+
+                      },
+
+                      "css"    : [],
+                      "script" : [],
+                      "start"  : []
+                 }
 
             }
 

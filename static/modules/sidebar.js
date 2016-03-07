@@ -19,13 +19,43 @@ var generateTree = function( selector, elements ){
 
             item.find('section').attr('id', current.name);
 
-            item.children('span').on('click', function (e) {
-                if ($(this).next().is(':visible')) {
-                    $(this).next().css('display', 'none');
-                } else {
-                    $(this).next().css('display', 'block');
-                }
-            });
+            item.children('span')
+                .on('click', function (e) {
+                    if ($(this).next().is(':visible')) {
+                        $(this).next().css('display', 'none');
+                    } else {
+                        $(this).next().css('display', 'block');
+                    }
+                });
+                item.children('span').on('contextmenu', function () {
+
+                    var menu = wz.menu();
+
+                    menu.addOption('Create File', function () {
+
+                            wz.fs.saveFile( current.id, { name : 'prueba' }, function ( err, destiny, userName, replace ) {
+
+                                var newItem = $( ITEM_HTML );
+                                newItem.find('span').text( userName );
+
+                                item.append( newItem );
+
+                                wz.fs.create({
+                                    name : userName,
+                                    destiny : destiny,
+                                    extension : userName.split('.')[1],
+                                    data : ''
+                                }, function ( err, data ) {
+                                    console.log(err, data);
+                                });
+
+                            });
+
+                    });
+
+                    menu.render();
+
+                });
 
             $('#' + selector).append( item );
 
@@ -38,10 +68,24 @@ var generateTree = function( selector, elements ){
         } else {
             item.attr('id', current.id);
 
-            item.on('click', function (e) {
-                tabMang.appendDocument( $(this).attr('id') );
-                editor( $(this).attr('id'), function () {});
-            });
+            item
+                .on('click', function (e) {
+                    tabMang.appendDocument( $(this).attr('id') );
+                    editor( $(this).attr('id'), function () {});
+                })
+                .on('contextmenu', function (e) {
+                    var menu = wz.menu();
+                    var file = $(this);
+
+                    menu.addOption('Delete file', function () {
+                        file.remove();
+                        wz.fs(file.attr('id'), function (error, fsnode) {
+                            fsnode.remove( function( error, quota ) {});
+                        });
+                    });
+
+                    menu.render();
+                });
 
             $('#' + selector).append( item );
         }
@@ -77,6 +121,7 @@ module.exports = function( selector ){
               var path;
 
               for( var i = 0; i < list.length; i++ ) {
+
                   if ( !list[i].type ) {
 
                       path = $(ITEM_LIST);

@@ -22,13 +22,8 @@ module.exports = function( id, callback ){
       }else{
 
         wz.fs( id, function( error, fsnode ){
-
-          // To Do -> error
-          fsnode.read( function( error, data ){
-            // To Do -> error
-            callback( null, data );
-          });
-
+            // To do  -> error
+            callback( null, fsnode );
         });
 
       }
@@ -36,7 +31,7 @@ module.exports = function( id, callback ){
     },
 
     // Create document and append default value
-    function( value, callback ){
+    function( fsnode, callback ){
 
       $('.code-editor').css('display', 'none');
 
@@ -45,18 +40,44 @@ module.exports = function( id, callback ){
 
       $('.code-container').append( editorElm );
 
-      var editor    = CodeMirror( editorElm[0], {
+      var extension = fsnode.name.split('.')[1];
+      var mode;
 
-        lineNumbers    : true,
-        theme          : 'monokai',
-        scrollbarStyle : "simple"
+      if (extension === 'html') {
+          mode = 'htmlmixed';
+      } else if (extension === 'css') {
+          mode = 'css';
+      } else {
+          mode = 'javascript';
+      }
 
+      var editor = CodeMirror( editorElm[0], {
+
+          lineNumbers    : true,
+          theme          : 'monokai',
+          scrollbarStyle : "simple",
+          mode           : mode
+
+      });
+
+      editor.setOption('extraKeys', {
+          'Ctrl-S': function () {
+              fsnode.write( editor.getValue(), function () {
+                  $('.tab.active').removeClass('hasChanged');
+              });
+          }
       });
 
       editorElm.addClass( 'editor-' + editorId );
       var editorItem = $( editor.getWrapperElement() ).addClass( 'editor-' + editorId );
 
-      editor.setValue( value );
+      fsnode.read(function( error, data ) {
+          editor.setValue( data );
+
+          editor.on('change', function (cm, change) {
+              $('.tab.active').addClass('hasChanged');
+          });
+      });
 
       callback( null, {
           id      : editorId,
