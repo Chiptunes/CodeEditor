@@ -68,7 +68,7 @@ aside{
   width: ~"calc(100% - 180px)";
   height: ~"calc(100% - 44px)";
   float: left;
-  background: #0f0;
+  background: #272822;
 }
 
 .CodeMirror{

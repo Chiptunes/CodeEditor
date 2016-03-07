@@ -6,6 +6,9 @@ var CodeMirror = require('./codemirror.js');
 // Variables
 var documentCounter = 0;
 
+// Elementos
+var CODE_ELEMENT = '<section class="code-editor"></section>';
+
 // Main module
 module.exports = function( id, callback ){
 
@@ -35,8 +38,14 @@ module.exports = function( id, callback ){
     // Create document and append default value
     function( value, callback ){
 
-      var editorId = documentCounter++;
-      var editor   = CodeMirror( $('.code-container')[ 0 ], {
+      $('.code-editor').css('display', 'none');
+
+      var editorId  = documentCounter++;
+      var editorElm = $( CODE_ELEMENT );
+
+      $('.code-container').append( editorElm );
+
+      var editor    = CodeMirror( editorElm[0], {
 
         lineNumbers    : true,
         theme          : 'monokai',
@@ -44,16 +53,15 @@ module.exports = function( id, callback ){
 
       });
 
+      editorElm.addClass( 'editor-' + editorId );
       var editorItem = $( editor.getWrapperElement() ).addClass( 'editor-' + editorId );
 
       editor.setValue( value );
 
       callback( null, {
-
-        id      : editorId,
-        editor  : editor,
-        element : editorItem.hide()
-
+          id      : editorId,
+          editor  : editor,
+          element : editorItem
       });
 
     }
