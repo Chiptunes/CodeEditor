@@ -62,9 +62,22 @@ module.exports = function( id, callback ){
 
       editor.setOption('extraKeys', {
           'Ctrl-S': function () {
+
               fsnode.write( editor.getValue(), function () {
                   $('.tab.active').removeClass('hasChanged');
               });
+
+          },
+          'Ctrl-W': function () {
+
+              var id   = $('.tab.active').attr('data-id');
+              var next = ($('.tab.active').prev().length) ? $('.tab.active').prev() : $('.tab.active').next();
+
+              $('.tab.active').remove();
+              $('.editor-' + next.addClass('active').attr('data-id')).show().focus();
+
+              $('.editor-' + id).remove();
+
           }
       });
 

@@ -17,7 +17,7 @@ var generateTree = function( selector, elements ){
 
         if ( !current.type ) {
 
-            item.find('section').attr('id', current.name);
+            item.find('section').attr('id', current.name.replace(' ', ''));
 
             item.children('span')
                 .on('click', function (e) {
@@ -27,18 +27,20 @@ var generateTree = function( selector, elements ){
                         $(this).next().css('display', 'block');
                     }
                 });
+
                 item.children('span').on('contextmenu', function () {
 
                     var menu = wz.menu();
 
                     menu.addOption('Create File', function () {
 
-                            wz.fs.saveFile( current.id, { name : 'prueba' }, function ( err, destiny, userName, replace ) {
+                        wz.fs.saveFile( current.id, { name : 'newFile' }, function ( err, destiny, userName, replace ) {
 
-                                var newItem = $( ITEM_HTML );
-                                newItem.find('span').text( userName );
+                            if (err) {
 
-                                item.append( newItem );
+                                console.log('Handle cancell needed');
+
+                            } else {
 
                                 wz.fs.create({
                                     name : userName,
@@ -46,10 +48,66 @@ var generateTree = function( selector, elements ){
                                     extension : userName.split('.')[1],
                                     data : ''
                                 }, function ( err, data ) {
-                                    console.log(err, data);
+
+                                    wz.fs( current.id, function (err, nodeList) {
+                                        nodeList.list( function (err, list) {
+                                            $('#' + current.name.replace(' ', '')).children().remove();
+                                            generateTree( current.name.replace(' ', ''), list );
+                                        });
+                                    });
+
+                                });
+
+                            }
+
+                        });
+
+                    });
+
+                    menu.addOption('Create Folder', function () {
+
+                        wz.fs( current.id, function (err, fsnode) {
+
+                            var nameWin = wz.app.createView( null, {
+                                animation : true,
+                                type      : 'writeName',
+                                width     : 500
+                            });
+
+                            nameWin.find('.cancel-file-name').on('click', function () {
+                                nameWin.remove();
+                            });
+
+                            nameWin.find('.accept-file-name').on('click', function () {
+
+                                fsnode.createDirectory(nameWin.find('#file-name').val(), function (err, newFSnode) {
+                                    if (err) {
+                                        console.log(err);
+                                    } else {
+                                        generateTree(current.name.replace(' ', ''), [ newFSnode ]);
+                                        nameWin.remove();
+                                    }
                                 });
 
                             });
+
+                        });
+
+                    });
+
+                    menu.addOption('Delete Folder', function () {
+
+                        wz.fs(current.id, function (err, fsnode) {
+                            console.log( err, fsnode );
+                            if (!err) {
+                                fsnode.remove(function (err) {
+                                    if (!err) {
+                                        $('#' + current.name.replace(' ', '')).parent().remove();
+                                    }
+                                });
+                            }
+
+                        });
 
                     });
 
@@ -61,7 +119,7 @@ var generateTree = function( selector, elements ){
 
             wz.fs( current.id, function (err, nodeList) {
                 nodeList.list( function (err, list) {
-                    generateTree( current.name, list );
+                    generateTree( current.name.replace(' ', ''), list );
                 });
             });
 

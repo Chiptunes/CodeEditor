@@ -1,6 +1,2 @@
 
-$('.add-project').click(function (e) {
-
-  $(this).delete();
-
-});
+var empty = function () {};
